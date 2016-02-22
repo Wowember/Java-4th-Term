@@ -1,20 +1,57 @@
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
 
 import static org.junit.Assert.*;
-import static ru.spbau.mit.wowember.SecondPartTasks.calculateGlobalOrder;
-import static ru.spbau.mit.wowember.SecondPartTasks.findPrinter;
-import static ru.spbau.mit.wowember.SecondPartTasks.piDividedBy4;
+import static ru.spbau.mit.wowember.SecondPartTasks.*;
 
 public class SecondPartTasksTest {
 
     @Test
-    public void testFindQuotes() {
+    public void testFindQuotes() throws IOException {
+        PrintWriter pw = new PrintWriter(new FileWriter("src/test/resources/File1.txt"));
+        String[] str = new String[]{"char data[] = {'a', 'b', 'c'};",
+                "String str = new String(data);",
+                " ",
+                "Here are some more examples of how strings can be used:",
+                "",
+                "System.out.println(\"abc\");",
+                "String cde = \"cde\";",
+                "System.out.println(\"abc\" + cde);",
+                "String c = \"abc\".substring(2,3);",
+                "String d = cde.substring(1, 2);",
+                " ",
+                "The class String includes methods for examining individual characters of the sequence, for comparing strings,",
+                "for searching strings, for extracting substrings, and for creating a copy of a string with all characters",
+                "translated to uppercase or to lowercase. Case mapping is based on the Unicode Standard version specified by the Character class."};
+        for (String s: str) {
+            pw.println(s);
+        }
+        pw.close();
 
+        pw = new PrintWriter(new FileWriter("src/test/resources/File2.txt"));
+        String[] str2 = new String[] {"srcBegin - index of the first character in the string to copy.",
+                "srcEnd - index after the last character in the string to copy.",
+                "dst - the destination array.",
+                "dstBegin - the start offset in the destination array.",
+                "Throws:\n",
+                "IndexOutOfBoundsException - If any of the following is true:",
+                "srcBegin is negative.",
+                "srcBegin is greater than srcEnd",
+                "srcEnd is greater than the length of this string",
+                "dstBegin is negative",
+                "dstBegin+(srcEnd-srcBegin) is larger than dst.length"};
+        for (String s: str2) {
+            pw.println(s);
+        }
+        pw.close();
+
+        List<String> ans = Arrays.asList(str[3], str[8], str[9], str[11], str[12], str2[0], str2[1], str2[8]);
+        assertEquals(findQuotes(Arrays.asList("src/test/resources/File1.txt", "src/test/resources/File2.txt"), "string"), ans);
+        assertEquals(null, findQuotes(Arrays.asList("src/test/resources/File.txt", "src/test/resources/File2.txt"), "string"));
     }
 
     @Test
@@ -74,6 +111,14 @@ public class SecondPartTasksTest {
         educationSystem.put("Crayons", 150);
         educationSystem.put("Human", 180);
 
+        Map<String, Integer> secondaryEducation = new HashMap<>();
+        secondaryEducation.put("Pen", 100);
+        secondaryEducation.put("Peper", 200);
+        secondaryEducation.put("Crayons", 150);
+        secondaryEducation.put("Human", 130);
+
         assertEquals(educationSystem, calculateGlobalOrder(Arrays.asList(school, university, kindergarten)));
+        assertEquals(secondaryEducation, calculateGlobalOrder(Arrays.asList(school, kindergarten)));
+        assertNotEquals(educationSystem, calculateGlobalOrder(Arrays.asList(school, university)));
     }
 }

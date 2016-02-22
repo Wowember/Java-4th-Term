@@ -31,7 +31,7 @@ public final class SecondPartTasks {
             }).filter(x -> x.contains(sequence)).collect(Collectors.toList());
         }
         catch (UncheckedIOException e) {
-            System.err.print(e.getMessage());
+            System.err.println(e.getMessage());
             e.printStackTrace();
         }
         return null;
