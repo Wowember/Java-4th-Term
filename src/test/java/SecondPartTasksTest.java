@@ -12,7 +12,6 @@ public class SecondPartTasksTest {
 
     @Test
     public void testFindQuotes() throws IOException {
-        PrintWriter pw = new PrintWriter(new FileWriter("src/test/resources/File1.txt"));
         String[] str = new String[]{"char data[] = {'a', 'b', 'c'};",
                 "String str = new String(data);",
                 " ",
@@ -27,12 +26,7 @@ public class SecondPartTasksTest {
                 "The class String includes methods for examining individual characters of the sequence, for comparing strings,",
                 "for searching strings, for extracting substrings, and for creating a copy of a string with all characters",
                 "translated to uppercase or to lowercase. Case mapping is based on the Unicode Standard version specified by the Character class."};
-        for (String s: str) {
-            pw.println(s);
-        }
-        pw.close();
 
-        pw = new PrintWriter(new FileWriter("src/test/resources/File2.txt"));
         String[] str2 = new String[] {"srcBegin - index of the first character in the string to copy.",
                 "srcEnd - index after the last character in the string to copy.",
                 "dst - the destination array.",
@@ -44,14 +38,10 @@ public class SecondPartTasksTest {
                 "srcEnd is greater than the length of this string",
                 "dstBegin is negative",
                 "dstBegin+(srcEnd-srcBegin) is larger than dst.length"};
-        for (String s: str2) {
-            pw.println(s);
-        }
-        pw.close();
 
         List<String> ans = Arrays.asList(str[3], str[8], str[9], str[11], str[12], str2[0], str2[1], str2[8]);
         assertEquals(findQuotes(Arrays.asList("src/test/resources/File1.txt", "src/test/resources/File2.txt"), "string"), ans);
-        assertEquals(null, findQuotes(Arrays.asList("src/test/resources/File.txt", "src/test/resources/File2.txt"), "string"));
+        assertNull(findQuotes(Arrays.asList("src/test/resources/File.txt", "src/test/resources/File2.txt"), "string"));
     }
 
     @Test
@@ -82,18 +72,19 @@ public class SecondPartTasksTest {
                 "such as accumulating elements into collections, summarizing elements according to various criteria, etc.";
 
         Map<String, List<String>> documentation = new HashMap<>();
-        documentation.put("Java6", Arrays.asList(java6AboutString));
-        documentation.put("Java7", Arrays.asList(java7AboutCharacter));
+        documentation.put("Java6", Collections.singletonList(java6AboutString));
+        documentation.put("Java7", Collections.singletonList(java7AboutCharacter));
         documentation.put("Java8", Arrays.asList(java8AboutCollectors, java8AboutStream));
 
         assertEquals("Java8", findPrinter(documentation));
+        assertNull(findPrinter(new HashMap<>()));
     }
 
     @Test
     public void testCalculateGlobalOrder() {
         Map<String, Integer> school = new HashMap<>();
         school.put("Pen", 100);
-        school.put("Peper", 200);
+        school.put("Paper", 200);
         school.put("Human", 100);
 
         Map<String, Integer> university = new HashMap<>();
@@ -106,19 +97,11 @@ public class SecondPartTasksTest {
 
         Map<String, Integer> educationSystem = new HashMap<>();
         educationSystem.put("Pen", 100);
-        educationSystem.put("Peper", 200);
+        educationSystem.put("Paper", 200);
         educationSystem.put("Marker", 10000000);
         educationSystem.put("Crayons", 150);
         educationSystem.put("Human", 180);
 
-        Map<String, Integer> secondaryEducation = new HashMap<>();
-        secondaryEducation.put("Pen", 100);
-        secondaryEducation.put("Peper", 200);
-        secondaryEducation.put("Crayons", 150);
-        secondaryEducation.put("Human", 130);
-
         assertEquals(educationSystem, calculateGlobalOrder(Arrays.asList(school, university, kindergarten)));
-        assertEquals(secondaryEducation, calculateGlobalOrder(Arrays.asList(school, kindergarten)));
-        assertNotEquals(educationSystem, calculateGlobalOrder(Arrays.asList(school, university)));
     }
 }

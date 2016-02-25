@@ -1,0 +1,12 @@
+srcBegin - index of the first character in the string to copy.
+srcEnd - index after the last character in the string to copy.
+dst - the destination array.
+dstBegin - the start offset in the destination array.
+Throws:
+
+IndexOutOfBoundsException - If any of the following is true:
+srcBegin is negative.
+srcBegin is greater than srcEnd
+srcEnd is greater than the length of this string
+dstBegin is negative
+dstBegin+(srcEnd-srcBegin) is larger than dst.length

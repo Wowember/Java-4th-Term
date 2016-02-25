@@ -55,8 +55,7 @@ public final class FirstPartTasks {
     public static Map<Artist, List<String>> groupByArtistMapName(Stream<Album> albums) {
         return albums.collect(Collectors.groupingBy(
                 Album::getArtist,
-                Collectors.mapping(Album::getName, Collectors.toCollection(ArrayList::new))
-                )
+                Collectors.mapping(Album::getName, Collectors.toList()))
         );
     }
 
@@ -67,19 +66,19 @@ public final class FirstPartTasks {
                 Collectors.counting()))
                 .entrySet()
                 .stream()
-                .reduce((long) 0, (x, p) -> x + p.getValue() - 1, (t1, t2) -> t1);
+                .filter(p -> p.getValue() > 1)
+                .count();
     }
 
     // Альбом, в котором максимум рейтинга минимален
     // (если в альбоме нет ни одного трека, считать, что максимум рейтинга в нем --- 0)
     public static Optional<Album> minMaxRating(Stream<Album> albums) {
-        return albums.collect(Collectors
-                .minBy(Comparator
-                        .comparing(x -> x.getTracks()
+        return albums.min(Comparator
+                        .comparingInt(x -> x.getTracks()
                                 .stream()
-                                .max(Comparator.comparing(Track::getRating))
+                                .max(Comparator.comparingInt(Track::getRating))
                                 .orElse(new Track("", 0))
-                                .getRating())));
+                                .getRating()));
     }
 
     // Список альбомов, отсортированный по убыванию среднего рейтинга его треков (0, если треков нет)
@@ -87,8 +86,8 @@ public final class FirstPartTasks {
         return albums
                 .sorted(Comparator.comparing(x -> x.getTracks()
                         .stream()
-                        .collect(Collectors
-                                .averagingInt(Track::getRating)), Comparator.reverseOrder()))
+                        .collect(Collectors.averagingInt(Track::getRating)),
+                        Comparator.reverseOrder()))
                 .collect(Collectors.toList());
     }
 
@@ -108,6 +107,6 @@ public final class FirstPartTasks {
 
     // Вернуть поток из объектов класса 'clazz'
     public static <R> Stream<R> filterIsInstance(Stream<?> s, Class<R> clazz) {
-        return (Stream<R>) s.filter(x -> clazz.isInstance(x));
+        return (Stream<R>) s.filter(clazz::isInstance);
     }
 }

@@ -26,12 +26,11 @@ public final class SecondPartTasks {
                 try {
                     return Files.lines(Paths.get(x));
                 } catch (IOException e) {
-                    throw new UncheckedIOException("Given wrong path: "+x, e);
+                    throw new UncheckedIOException("Given wrong path: " + x, e);
                 }
             }).filter(x -> x.contains(sequence)).collect(Collectors.toList());
         }
         catch (UncheckedIOException e) {
-            System.err.println(e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -43,8 +42,8 @@ public final class SecondPartTasks {
     public static double piDividedBy4() {
         Random random = new Random();
         class Point {
-            private double x;
-            private double y;
+            private final double x;
+            private final double y;
 
             public Point(double x, double y) {
                 this.x = x - TARGET_CENTER_X;
@@ -69,13 +68,12 @@ public final class SecondPartTasks {
         return compositions
                 .entrySet()
                 .stream()
-                .sorted(Comparator
+                .max(Comparator
                         .comparing(p ->
                                 p.getValue()
                                         .stream()
-                                        .reduce(0, (sum, book) -> sum + book.length(), (sum1, sum2) -> sum1 + sum2), Comparator.reverseOrder()))
+                                        .mapToInt(String::length).sum()))
                 .map(Map.Entry::getKey)
-                .findFirst()
                 .orElse(null);
     }
 
@@ -84,17 +82,9 @@ public final class SecondPartTasks {
     public static Map<String, Integer> calculateGlobalOrder(List<Map<String, Integer>> orders) {
         return orders
                 .stream()
-                .reduce(new HashMap(), (ans, mp) -> {
-                        mp.entrySet()
-                                .stream()
-                                .forEach(p -> {
-                                    if (ans.get(p.getKey()) == null) {
-                                        ans.put(p.getKey(), p.getValue());
-                                    } else {
-                                        ans.put(p.getKey(), ans.get(p.getKey()) + p.getValue());
-                                    }
-
-                                });
-                        return ans;});
+                .flatMap(mp -> mp.entrySet().stream())
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getKey,
+                        Collectors.summingInt(Map.Entry::getValue)));
     }
 }
