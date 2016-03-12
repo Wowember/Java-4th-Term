@@ -1,0 +1,14 @@
+char data[] = {'a', 'b', 'c'};
+String str = new String(data);
+ 
+Here are some more examples of how strings can be used:
+
+System.out.println("abc");
+String cde = "cde";
+System.out.println("abc" + cde);
+String c = "abc".substring(2,3);
+String d = cde.substring(1, 2);
+ 
+The class String includes methods for examining individual characters of the sequence, for comparing strings,
+for searching strings, for extracting substrings, and for creating a copy of a string with all characters
+translated to uppercase or to lowercase. Case mapping is based on the Unicode Standard version specified by the Character class.
