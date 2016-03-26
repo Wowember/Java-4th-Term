@@ -14,68 +14,40 @@ public class Client {
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
 
-    public void connect(String ipAddress, int port) {
-        try {
-            socket = new Socket(ipAddress, port);
-            inputStream = new DataInputStream(socket.getInputStream());
-            outputStream = new DataOutputStream((socket.getOutputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void connect(String ipAddress, int port) throws IOException {
+        socket = new Socket(ipAddress, port);
+        inputStream = new DataInputStream(socket.getInputStream());
+        outputStream = new DataOutputStream((socket.getOutputStream()));
     }
 
-    public void disconnect() {
-        try {
-            inputStream.close();
-            outputStream.close();
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void disconnect() throws IOException {
+        socket.close();
     }
 
-    public List<FileInfo> executeList(String path) {
+    public List<FileInfo> executeList(String path) throws IOException {
+
+        outputStream.writeInt(LIST_REQUEST);
+        outputStream.writeUTF(path);
+        outputStream.flush();
+
         List<FileInfo> files = new ArrayList<>();
-        try {
-            outputStream.writeInt(LIST_REQUEST);
-            outputStream.writeUTF(path);
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return files;
-        }
-
-        try {
-            int size = inputStream.readInt();
-            for (int i = 0; i < size; i++) {
-                String fileName = inputStream.readUTF();
-                boolean isDirectory = inputStream.readBoolean();
-                files.add(new FileInfo(fileName, isDirectory));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        int size = inputStream.readInt();
+        for (int i = 0; i < size; i++) {
+            String fileName = inputStream.readUTF();
+            boolean isDirectory = inputStream.readBoolean();
+            files.add(new FileInfo(fileName, isDirectory));
         }
         return files;
     }
 
-    public InputStream executeGet(String path) {
-        byte[] buffer = new byte[0];
-        try {
-            outputStream.writeInt(GET_REQUEST);
-            outputStream.writeUTF(path);
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ByteArrayInputStream(buffer);
-        }
+    public InputStream executeGet(String path) throws IOException {
+        outputStream.writeInt(GET_REQUEST);
+        outputStream.writeUTF(path);
+        outputStream.flush();
 
-        try {
-            long fileSize = inputStream.readLong();
-            buffer = new byte[(int)fileSize];
-            inputStream.read(buffer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        long fileSize = inputStream.readLong();
+        byte [] buffer = new byte[(int)fileSize];
+        inputStream.read(buffer);
         return new ByteArrayInputStream(buffer);
     }
 

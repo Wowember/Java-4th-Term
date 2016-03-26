@@ -12,12 +12,8 @@ public class Server {
 
     private ServerSocket serverSocket;
 
-    public Server(int port) {
-        try {
-            serverSocket = new ServerSocket(port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public Server(int port) throws IOException {
+        serverSocket = new ServerSocket(port);
     }
 
     public void start() {
@@ -25,7 +21,13 @@ public class Server {
             while(serverSocket != null && !serverSocket.isClosed()) {
                 try {
                     Socket socket = serverSocket.accept();
-                    new Thread(() -> handleConnection(socket)).start();
+                    new Thread(() -> {
+                        try {
+                            handleConnection(socket);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -33,28 +35,19 @@ public class Server {
         }).start();
     }
 
-    public void stop() {
-        try {
-            serverSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        serverSocket = null;
+    public void stop() throws IOException {
+        serverSocket.close();
     }
 
-    private void handleConnection(Socket socket) {
-        try {
-            DataInputStream inputStream = new DataInputStream(socket.getInputStream());
-            DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
-            int requestType = inputStream.readInt();
-            String path = inputStream.readUTF();
-            if (requestType == LIST_REQUEST) {
-                list(path, outputStream);
-            } else if (requestType == GET_REQUEST){
-                get(path, outputStream);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void handleConnection(Socket socket) throws IOException {
+        DataInputStream inputStream = new DataInputStream(socket.getInputStream());
+        DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+        int requestType = inputStream.readInt();
+        String path = inputStream.readUTF();
+        if (requestType == LIST_REQUEST) {
+            list(path, outputStream);
+        } else if (requestType == GET_REQUEST){
+            get(path, outputStream);
         }
     }
 
@@ -62,19 +55,19 @@ public class Server {
         File directory = new File(path);
         if (directory.exists() && directory.isDirectory()) {
             File[] listFiles = directory.listFiles();
-                if (listFiles == null) {
-                    outputStream.writeInt(0);
-                    return;
-                }
-                outputStream.writeInt(listFiles.length);
-                for (File file: listFiles) {
-                    outputStream.writeUTF(file.getName());
-                    outputStream.writeBoolean(file.isDirectory());
-                }
-                outputStream.flush();
+            if (listFiles == null) {
+                outputStream.writeInt(0);
+                return;
+            }
+            outputStream.writeInt(listFiles.length);
+            for (File file: listFiles) {
+                outputStream.writeUTF(file.getName());
+                outputStream.writeBoolean(file.isDirectory());
+            }
         } else {
             outputStream.writeInt(0);
         }
+        outputStream.flush();
     }
 
     private void get(String path, DataOutputStream outputStream) throws IOException {
@@ -85,6 +78,7 @@ public class Server {
         } else {
             outputStream.writeLong(0);
         }
+        outputStream.flush();
     }
 
     public int getPort() {
