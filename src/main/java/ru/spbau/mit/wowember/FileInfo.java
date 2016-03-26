@@ -11,11 +11,11 @@ public class FileInfo {
     }
 
 
-    private String getFileName() {
+    public String getFileName() {
         return fileName;
     }
 
-    private boolean isDirectory() {
+    public boolean isDirectory() {
         return isDirectory;
     }
 

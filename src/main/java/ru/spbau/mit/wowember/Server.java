@@ -39,6 +39,10 @@ public class Server {
         serverSocket.close();
     }
 
+    public int getPort() {
+        return serverSocket.getLocalPort();
+    }
+
     private void handleConnection(Socket socket) throws IOException {
         DataInputStream inputStream = new DataInputStream(socket.getInputStream());
         DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
@@ -81,7 +85,4 @@ public class Server {
         outputStream.flush();
     }
 
-    public int getPort() {
-        return serverSocket.getLocalPort();
-    }
 }
